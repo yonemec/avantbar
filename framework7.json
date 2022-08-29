@@ -1,0 +1,19 @@
+{
+  "cwd": "C:\\avantbar",
+  "type": [
+    "pwa"
+  ],
+  "name": "AvantBar",
+  "framework": "core",
+  "template": "tabs",
+  "bundler": "vite",
+  "cssPreProcessor": false,
+  "theming": {
+    "customColor": true,
+    "color": "#5d7261",
+    "darkTheme": true,
+    "iconFonts": true,
+    "fillBars": true
+  },
+  "customBuild": false
+}
