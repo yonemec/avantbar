@@ -43,17 +43,17 @@
           <a href="#view-home" class="tab-link tab-link-active">
             <i class="icon f7-icons if-not-md">house_fill</i>
             <i class="icon material-icons if-md">home</i>
-            <span class="tabbar-label">Home</span>
+            <span class="tabbar-label">Menu</span>
           </a>
           <a href="#view-catalog" class="tab-link">
             <i class="icon f7-icons if-not-md">square_list_fill</i>
             <i class="icon material-icons if-md">view_list</i>
-            <span class="tabbar-label">Catalog</span>
+            <span class="tabbar-label">Pedidos</span>
           </a>
           <a href="#view-settings" class="tab-link">
             <i class="icon f7-icons if-not-md">gear</i>
             <i class="icon material-icons if-md">settings</i>
-            <span class="tabbar-label">Settings</span>
+            <span class="tabbar-label">Cuenta</span>
           </a>
         </div>
       </div>
@@ -109,7 +109,7 @@
                   <div class="item-inner">
                     <div class="item-title item-label">Username</div>
                     <div class="item-input-wrap">
-                      <input type="text" name="username" placeholder="Your username" value="${username}" @input="${updateUsername}"/>
+                      <input type="text" name="username" placeholder="Your username"  id="miusername" value="${username}" @input="${updateUsername}"/>
 
                     </div>
                   </div>
@@ -142,7 +142,7 @@
   </div>
 </template>
 <script>
-  export default (props, { $f7, $update }) => {
+  export default (props, { $f7, $update, $ }) => {
     // Login screen demo data
     let username = '';
     let password = '';
@@ -156,6 +156,8 @@
       $update();
     }
     const alertLoginData = () => {
+
+      alert($("#miusername").val());
       $f7.dialog.alert('Username: ' + username + '<br/>Password: ' + password, () => {
         $f7.loginScreen.close();
       });
