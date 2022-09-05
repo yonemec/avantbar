@@ -10,6 +10,9 @@ import DynamicRoutePage from '../pages/dynamic-route.f7';
 import RequestAndLoad from '../pages/request-and-load.f7';
 import NotFoundPage from '../pages/404.f7';
 
+//import Productos from '../pages/productos.f7';
+
+
 var routes = [
   {
     path: '/',
