@@ -6,16 +6,16 @@
       <div class="left">
         <a href="#" class="link back">
           <i class="icon icon-back"></i>
-          <span class="if-not-md">Back</span>
+          <span class="if-not-md">Volver</span>
         </a>
       </div>
-      <div class="title">Not found</div>
+      <div class="title">No encontrado</div>
     </div>
   </div>
   <div class="page-content">
     <div class="block block-strong">
-      <p>Sorry</p>
-      <p>Requested content not found.</p>
+      <p>Disculpe</p>
+      <p>Contenido solicitado no encontrado.</p>
     </div>
   </div>
 </div>

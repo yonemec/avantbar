@@ -10,14 +10,13 @@ import DynamicRoutePage from '../pages/dynamic-route.f7';
 import RequestAndLoad from '../pages/request-and-load.f7';
 import NotFoundPage from '../pages/404.f7';
 
-//import Productos from '../pages/productos.f7';
-
+import Productos from '../pages/productos.f7';
 
 var routes = [
- /* {
-    path: '/',
-    component: HomePage,
-  },*/
+  {
+    path: '/',    
+    component: Productos,
+  },
   {
     path: '/about/',
     component: AboutPage,
@@ -88,33 +87,6 @@ var routes = [
           }
         );
       }, 1000);
-    },
-  },
-  {
-    path: '/',
-    async: function ({ router, to, resolve }) {
-      // App instance
-      
-      var gymid = to.params.gymid;
-      var app = router.app;
-      console.log(gymid);
-      app.store.dispatch('getProductos');
-      // Show Preloader
-      //app.preloader.show();
-
-      // User ID from request
-      var userId = to.params.userId;
-      resolve(
-        {
-          component: HomePage,
-        },
-        {
-          props: {
-            productos: app.store.getters.productos,
-          }
-        }
-      );
-      
     },
   },
   {
