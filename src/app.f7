@@ -147,6 +147,8 @@
     let username = '';
     let password = '';
 
+    console.log(window.location);
+
     const updateUsername = (e) => {
       username = e.target.value;
       $update();

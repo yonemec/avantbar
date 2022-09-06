@@ -14,10 +14,10 @@ import NotFoundPage from '../pages/404.f7';
 
 
 var routes = [
-  {
+ /* {
     path: '/',
     component: HomePage,
-  },
+  },*/
   {
     path: '/about/',
     component: AboutPage,
@@ -91,50 +91,30 @@ var routes = [
     },
   },
   {
-    path: '/productos/user/:userId/',
+    path: '/',
     async: function ({ router, to, resolve }) {
       // App instance
+      
+      var gymid = to.params.gymid;
       var app = router.app;
-
+      console.log(gymid);
+      app.store.dispatch('getProductos');
       // Show Preloader
-      app.preloader.show();
+      //app.preloader.show();
 
       // User ID from request
       var userId = to.params.userId;
-
-      // Simulate Ajax Request
-      setTimeout(function () {
-        // We got user data from request
-        var user = {
-          firstName: 'Vladimir',
-          lastName: 'Kharlampidi',
-          about: 'Hello, i am creator of Framework7! Hope you like it!',
-          links: [
-            {
-              title: 'Framework7 Website',
-              url: 'http://framework7.io',
-            },
-            {
-              title: 'Framework7 Forum',
-              url: 'http://forum.framework7.io',
-            },
-          ]
-        };
-        // Hide Preloader
-        app.preloader.hide();
-
-        // Resolve route to load page
-        resolve(
-          {
-            component: RequestAndLoad,
-          },
-          {
-            props: {
-              user: user,
-            }
+      resolve(
+        {
+          component: HomePage,
+        },
+        {
+          props: {
+            productos: app.store.getters.productos,
           }
-        );
-      }, 1000);
+        }
+      );
+      
     },
   },
   {
