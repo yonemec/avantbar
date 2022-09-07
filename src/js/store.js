@@ -42,19 +42,21 @@ const store = createStore({
     addProduct({ state }, product) {
       state.products = [...state.products, product];
     },
-    generarpedido({state}){
-          fetch('https://fakestoreapi.com/products/')
-          .then(res=>res.json())
-          .then(json=>{
-            console.log(json);   
-            json.forEach(element => {
-              element.stock=10;
-              element.pedido=0;                
-            });
-            console.log(json);           
-            state.productos=json;
-            state.productosloading = false;      
-          })
+    generarpedido({state}){//https://stackoverflow.com/questions/29775797/fetch-post-json-data
+    
+        console.log(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
+
+          let algo=JSON.stringify(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
+        Framework7.request.json('http://localhost:8080/AvantBar/AjaxPedidosApp?')
+        .then(function (res) {         
+          console.log(res);         
+        });
+
+        /*Framework7.request.postJSON('http://localhost:8080/AvantBar/AjaxPedidosApp', state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }))
+        .then(function (res) {
+          console.log(res.data);
+        });*/
+        
     },
     setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
       

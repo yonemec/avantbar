@@ -14,7 +14,7 @@
     </div>
 
     ${cantpedida.value>0? $h`
-      <div class="fab fab-extended fab-center-bottom color-green"   style="min-width: 220px;">
+      <div class="fab fab-extended fab-center-bottom color-green"  style="min-width: 220px;" >
         <a href="#"  @click=${generarpedido}  >
           <i class="icon f7-icons if-not-md">checkmark_2</i>
           <i class="icon material-icons md-only">done_all</i>  
@@ -76,7 +76,7 @@
     const generarpedido=()=>{
       if(cantpedida.value>0)
         {
-          $store.generarpedido();
+          $store.dispatch('generarpedido'); 
         }else{
           $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {
             
