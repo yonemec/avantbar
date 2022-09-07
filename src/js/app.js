@@ -19,11 +19,12 @@ import App from '../app.f7';
 
 
 var app = new Framework7({
+ 
   name: 'AvantBar', // App name
   theme: 'auto', // Automatic theme detection
   el: '#app', // App root element
   component: App, // App main component
-
+ 
   // App store
   store: store,
   // App routes
@@ -32,4 +33,32 @@ var app = new Framework7({
   serviceWorker: process.env.NODE_ENV ==='production' ? {
     path: '/service-worker.js',
   } : {},
+  on: {
+    init: function () {
+      var f7 = this;      
+      var theme = this.theme;
+      console.log(theme);
+      var formData = {
+        'name': 'John',
+        'email': 'john@doe.com',
+        'gender': 'female',
+        'toggle': ['yes'],
+      }
+      this.form.storeFormData('#carrito', formData);
+      const algo=  this.form.getFormData('#carrito', formData);
+      console.log(algo);
+
+/*
+      if (theme == "ios") {
+          this.data.soversion = 2;          
+      }  
+      else{
+          this.data.soversion = 1;          
+      }   */    
+      
+      ///this.methods.autoLogin(null); 
+      
+      
+    },
+  },
 });

@@ -6,16 +6,39 @@
         <div class="title">Productos</div>
       </div>
     </div>
-    <div class="page-content">
-      
 
+    ${productos.value.length > 0 ? $h`
+    <div class="searchbar-backdrop"></div>
+    <form class="searchbar searchbar-init" data-search-container=".list" data-search-in=".item-title" >
+      <div class="searchbar-inner">
+        <div class="searchbar-input-wrap">
+          <input type="search" placeholder="Buscar" />
+          <i class="searchbar-icon"></i>
+          <span class="input-clear-button"></span>
+        </div>
+        <span class="searchbar-disable-button">Cancelar</span>
+      </div>
+    </form>
+    `:''}
+
+    <div class="fab fab-extended fab-center-bottom"   style="min-width: 220px;">
+      <a href="#"  @click=${confirmarcarrito}  >
+        <i class="icon f7-icons if-not-md">cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>
+        <i class="icon material-icons md-only">shopping_cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
+        <div class="fab-text">${importepedida.value>0?formatter.format(importepedida.value):'Carrito vacio'}</div>
+      </a>
+    </div>
+
+
+    <div class="page-content">
+    
       ${productos.value.length > 0 ? $h`
-        <div class="list media-list">
+        <div class="list media-list ">
           <ul>
-            <li class="item-divider item-title_especialidad"  >Empanadas</li>
+            <li class="item-divider">Empanadas</li>
             ${productos.value.map((item) => $h`
               <li>
-                <a href="#" class="item-link item-content">
+                <a href="#" class="item-content">
                   <div class="item-media"><img src="${item.image}"
                       width="80" /></div>
                   <div class="item-inner">
@@ -23,14 +46,14 @@
                       <div class="item-title">${item.title}</div>
                       <div class="item-after">$ ${item.price}</div>
                     </div>
-                    <div class="item-text">${item.description}</div>    
+                    <div class="item-text  ">${item.description}</div>    
                     <div class="col">
                       <div class="stepper stepper-large stepper-round stepper-fill stepper-init">
-                        <div class="stepper-button-minus ${item.pedido==0 ? 'disabled' : ''}"  @click=${()=>stepperminus({item})}  ></div>
+                        <div class="stepper-button-minus ${item.pedido==0 ? 'disabled' : ''}"  @click=${()=>stepperminus(item)}  ></div>
                         <div class="stepper-input-wrap">
                           <input type="text" value="${item.pedido}" min="0" max="${item.stock}" step="1" readonly />
                         </div>
-                        <div class="stepper-button-plus ${item.pedido==item.stock ? 'disabled' : ''}"  @click=${()=>stepperplus({ item})}  ></div>
+                        <div class="stepper-button-plus ${item.pedido==item.stock ? 'disabled' : ''}"  @click=${()=>stepperplus(item)}  ></div>
                       </div>
                     </div>
     
@@ -38,6 +61,9 @@
                 </a>
               </li>
             `)}
+
+            <li class="" style="height: 60px;"  ></li>
+            
           </ul>
         </div>
       ` : $h`
@@ -56,25 +82,39 @@
   </div>
 </template>
 <script>
-  export default (props, { $store, $, $onMounted, }) => {
+  export default (props, { $f7,$store, $, $onMounted, $on }) => {
     const productosloading = $store.getters.productosloading;
     const productos = $store.getters.productos;
-
-    console.log("productosloading",productosloading);
-    console.log("productos",productos);
+    const cantpedida = $store.getters.cantpedida;
+    const importepedida = $store.getters.importepedida;
+    
+    console.log(props);
+    console.log(importepedida);
 
     const stepperplus =(e)=>{
-      console.log(e);
-      e.item.pedido=e.item.pedido+1;
+      e.pedido=e.pedido+1;
       $store.dispatch('setproducto',e);
     };
 
     const stepperminus =(e)=>{
-      console.log(e);
-      e.item.pedido=e.item.pedido-1;
+      e.pedido=e.pedido-1;
       $store.dispatch('setproducto',e);
     };
     
+    const confirmarcarrito=()=>{
+        if(cantpedida.value>0)
+        {
+          $f7.views.main.router.navigate({
+			    			  path: '/carrito',			    			  
+			    			});
+        }else{
+          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {
+            
+          });
+        }
+
+    };
+
     const getproductos = () => {
       $store.dispatch('getproductos');
     };

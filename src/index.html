@@ -30,5 +30,13 @@
   <div id="app" class="dark"></div>
   
   <script type="module" src="./js/app.js"></script>
+  <script>
+const formatter = new Intl.NumberFormat('en-US', {
+	  style: 'currency',
+	  currency: 'USD',
+	  minimumFractionDigits: 0
+	})
+
+  </script>
 </body>
 </html>

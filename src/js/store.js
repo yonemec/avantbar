@@ -23,30 +23,49 @@ const store = createStore({
     ],
     productos: [],
     productosloading: false,
+    generandopedido:false
   },
   getters: {
     products({ state }) {
       return state.products;
     },
+    generandopedido: ({ state }) => state.generandopedido,
     productosloading: ({ state }) => state.productosloading,
     productos: ({ state }) => state.productos,    
+    productospedidos: ({ state }) => state.productos.filter(c=>c.pedido>0),    
+    //cantpedida: ({state}) => state.productos.reduce((a, b) => a.pedido + b.pedido, 0),
+    cantpedida: ({state}) => state.productos.reduce(function(a, b) {  return a + b.pedido; }, 0),
+    importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.price); }, 0),
+    
   },
   actions: {
     addProduct({ state }, product) {
       state.products = [...state.products, product];
     },
-    setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
-      state.productosloading = true;  
-      
-      const index = state.productos.findIndex(p => p.id === e.item.id);
-      console.log(index,e.item);
-      if (index > -1) {
-        state.productos[index] = e.item;
-        state.productos = [...state.productos];
-      }
-      
-      state.productosloading = false;  
+    generarpedido({state}){
+          fetch('https://fakestoreapi.com/products/')
+          .then(res=>res.json())
+          .then(json=>{
+            console.log(json);   
+            json.forEach(element => {
+              element.stock=10;
+              element.pedido=0;                
+            });
+            console.log(json);           
+            state.productos=json;
+            state.productosloading = false;      
+          })
     },
+    setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
+      
+      const index = state.productos.findIndex(p => p.id === e.id);      
+      if (index > -1) {
+        state.productos[index] = e;
+        state.productos = [...state.productos];
+      }      
+    },
+   
+   
     getproductos({ state }) {
        state.productosloading = true;      
         
@@ -59,7 +78,7 @@ const store = createStore({
               console.log(json);   
               json.forEach(element => {
                 element.stock=10;
-                element.pedido=4;                
+                element.pedido=0;                
               });
               console.log(json);           
               state.productos=json;

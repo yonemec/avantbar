@@ -1,0 +1,89 @@
+<template>
+  <div class="page" data-name="carrito">
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a href="#" class="back link">
+            <i class="icon icon-back"></i>
+            <span class="if-not-md">Volver</span>
+          </a>
+        </div>
+        <div class="title">Carrito</div>
+      </div>
+    </div>
+
+    ${cantpedida.value>0? $h`
+      <div class="fab fab-extended fab-center-bottom color-green"   style="min-width: 220px;">
+        <a href="#"  @click=${generarpedido}  >
+          <i class="icon f7-icons if-not-md">checkmark_2</i>
+          <i class="icon material-icons md-only">done_all</i>  
+          <div class="fab-text ">Confirmar pedido</div>
+        </a>
+      </div>
+      `:'' }
+    
+
+
+    <div class="page-content">
+    
+      ${productos.value.length > 0 ? $h`
+      <div class="block-title">Revise y confirme su carrito<div class="item-after">Importe total ${formatter.format(importepedida.value)}</div></div>
+      
+      <div class="list media-list">
+        <ul>
+          ${productos.value.map((item) => $h`
+            <li class="swipeout"   @swipeout:deleted=${()=>onDeleted(item)}>
+              <div class="item-content swipeout-content">
+                <div class="item-media"><img src="${item.image}"
+                    width="40" /></div>
+                <div class="item-inner">
+                  <div class="item-title-row">
+                    <div class="item-title">${item.title}</div>                    
+                  </div>
+                  <div class="item-text">${item.pedido} * ${formatter.format(item.price)} = ${formatter.format(item.price*item.pedido)}</div>
+  
+                </div>
+              </div>
+              <div class="swipeout-actions-right">
+                <a href="#" class="swipeout-delete">Eliminar</a>
+              </div>
+            </li>
+          `)}
+        </ul>
+      </div>
+      ` : $h`
+        <div class="block block-strong">
+          Carrito vacio
+        </div>
+      `}    
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, {$f7, $store, $, $onMounted, }) => {
+    const productos = $store.getters.productospedidos;
+    const cantpedida = $store.getters.cantpedida;
+    const importepedida = $store.getters.importepedida;
+    
+    const onDeleted = (e) => {
+        e.pedido=0;        
+        $store.dispatch('setproducto',e); 
+        //si no hago r efresh, swipe elimina la posicion despeus de dispatch, y nteo un item menos
+        $f7.views.main.router.refreshPage();
+    }   
+
+    const generarpedido=()=>{
+      if(cantpedida.value>0)
+        {
+          $store.generarpedido();
+        }else{
+          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {
+            
+          });
+        }
+    }
+
+    return $render;
+  };
+</script>
