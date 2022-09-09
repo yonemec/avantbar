@@ -43,10 +43,9 @@ const store = createStore({
       state.products = [...state.products, product];
     },
     generarpedido({state}){//https://stackoverflow.com/questions/29775797/fetch-post-json-data
-    
-        console.log(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
 
-          let algo=JSON.stringify(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
+        console.log(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido }; }));
+        JSON.stringify(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
         Framework7.request.json('http://localhost:8080/AvantBar/AjaxPedidosApp?')
         .then(function (res) {         
           console.log(res);         
@@ -56,10 +55,8 @@ const store = createStore({
         .then(function (res) {
           console.log(res.data);
         });*/
-        
     },
     setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
-      
       const index = state.productos.findIndex(p => p.id === e.id);      
       if (index > -1) {
         state.productos[index] = e;
@@ -67,10 +64,18 @@ const store = createStore({
       }      
     },
    
-   
     getproductos({ state }) {
-       state.productosloading = true;      
-        
+       state.productosloading = true;
+      /* let algo=JSON.stringify(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
+       Framework7.request.json('http://localhost:8080/AvantBar/AjaxPedidosApp?algo=233213')
+       .then(function (res)   { console.log(res);}) 
+       .catch(function(error) { console.log(error);})
+       .finally(function() { state.productosloading = false; });*/
+
+
+       
+
+
        /*const response = await fetch('https://fakestoreapi.com/products/');
        const movies = await response.json();*/
 
@@ -86,6 +91,30 @@ const store = createStore({
               state.productos=json;
               state.productosloading = false;      
             })
+            .catch(function(error) { console.log(error);})
+            .finally(function() { state.productosloading = false; 
+
+              Framework7.request.postJSON('http://localhost:8080/AvantBar/AjaxPedidosApp', { operacion: 1, listaitems: state.productos  })
+            .then(function (res) {
+              console.log(res.data);
+            });
+
+
+              (async () => {
+                const rawResponse = await fetch('http://localhost:8080/AvantBar/AjaxPedidosApp', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({operacion: 1, listaitems: state.productos })
+                });
+                const content = await rawResponse.json();
+              
+                console.log(content);
+              })();
+            
+            });
       
       /*Framework7.request.json('https://fakestoreapi.com/products/', { operacion: 0})
       .then(function (res) {
