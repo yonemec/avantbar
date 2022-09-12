@@ -12,6 +12,8 @@ import NotFoundPage from '../pages/404.f7';
 
 import Productos from '../pages/productos.f7';
 import Carrito from '../pages/carrito.f7';
+import Pedidos from '../pages/pedidos.f7';
+import PedidosDet from '../pages/pedidosdet.f7';
 
 var routes = [
   {
@@ -21,6 +23,10 @@ var routes = [
   {
     path: '/carrito',    
     component: Carrito,
+  },
+  {
+    path: '/pedidos',
+    component: Pedidos,
   },
   {
     path: '/about/',
@@ -92,6 +98,59 @@ var routes = [
           }
         );
       }, 1000);
+    },
+  },
+  {
+    path: '/det/:idpedido/',
+    async: function ({ router, to, resolve }) {
+      
+     
+
+      // App instance
+      var app = router.app;
+
+      // Show Preloader
+      app.preloader.show();
+
+      // User ID from request
+      var idpedido = to.params.idpedido;
+      var pedido=app.store.state.pedidos.find(c=>c.id==idpedido);
+
+      fetch('http://localhost:8080/AvantBar/AjaxPedidosDetApp?pedido='+idpedido)
+      .then(res=>res.json())
+      .then(json=>{            
+        console.log(json);
+        app.preloader.hide();
+        if(json.status==1)
+        {
+          app.f7.dialog.alert(json.mensaje);
+        }else{
+          
+            pedido.lista=json.data;
+           // Resolve route to load page
+              resolve(
+                {
+                  component: PedidosDet,
+                },
+                {
+                  props: {
+                    pedido: pedido,
+                  }
+                }
+              );
+              
+        }
+
+
+             
+      })
+      .catch(function(error) { console.log(error);  console.log(app);   app.dialog.alert(error); })
+      .finally(function() {
+        app.preloader.hide();
+      });
+
+       
+      
     },
   },
   {

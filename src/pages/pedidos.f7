@@ -1,0 +1,41 @@
+<template>
+  <div class="page" data-name="pedidos">
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner sliding">
+        <div class="title">Pedidos</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="list">
+        <ul>
+          ${pedidos.value.map((pedido) => $h`
+          <li>
+            <a href="/det/${pedido.id}/" class="item-link item-content">
+              <div class="item-inner">
+                <div class="item-title">
+                  <div class="item-header">Fecha: ${pedido.fastr}</div>Estado: <span class="badge" style="background-color:${pedido.estado.color}" >${pedido.estado.nombre}</span>
+                </div>
+                <div class="item-after">${pedido.importestr}</div>
+              </div>
+            </a>
+          </li>   
+          `)}       
+        </ul>
+      </div>     
+    </div>
+  </div>
+</template>
+<script>
+  export default (props, { $store }) => {
+    const pedidos = $store.getters.pedidos;
+
+    const getpedidos = () => {
+      $store.dispatch('getpedidos');
+    };
+
+    getpedidos();
+    return $render;
+  }
+
+</script>

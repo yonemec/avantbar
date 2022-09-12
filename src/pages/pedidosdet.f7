@@ -1,0 +1,58 @@
+<template>
+  <div class="page">
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a href="#" class="back link">
+            <i class="icon icon-back"></i>
+            <span class="if-not-md">Volver</span>
+          </a>
+        </div>
+        <div class="title">Detalle</div>
+      </div>
+    </div>
+    <div class="page-content">
+      
+        ${pedido.lista.length > 0 ? $h`
+        <div class="block-title">Pedido #${pedido.id}
+          <div class="item-after">Importe total ${pedido.importestr}</div>
+          <div class="item-after">Estado: <span class="badge" style="background-color:${pedido.estado.color}" >${pedido.estado.nombre}</span></div>          
+      </div>
+        
+        <div class="list media-list">
+          <ul>
+            ${pedido.lista.map((item) => $h`
+              <li>
+                <div class="item-content">
+                  <div class="item-media"><img src="${item.imagen}"
+                      width="40" /></div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">${item.nombre}</div>                    
+                    </div>
+                    <div class="item-text">${item.cant} * ${item.preciostr} = ${item.importestr}}</div>
+    
+                  </div>
+                </div>               
+              </li>
+            `)}
+          </ul>
+        </div>
+        ` : $h`
+          <div class="block block-strong">
+            Pedido vacio
+          </div>
+        `}    
+      
+    </div>
+  </div>
+</template>
+<script>
+  export default (props) => {
+    const pedido = props.pedido;
+
+    return $render;
+  }
+</script>
+

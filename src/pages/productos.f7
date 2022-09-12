@@ -74,7 +74,7 @@
             @click=${getproductos}
           >
             <span class="preloader"></span>
-            <span>Load productos</span>
+            <span>Cargar productos</span>
           </a>
         </div>
       `}    
@@ -112,13 +112,11 @@
             
           });
         }
-
     };
 
     const getproductos = () => {
       $store.dispatch('getproductos');
     };
-
     getproductos();
     return $render;
   };

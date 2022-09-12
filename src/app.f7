@@ -45,9 +45,11 @@
             <i class="icon material-icons if-md">home</i>
             <span class="tabbar-label">Menu</span>
           </a>
-          <a href="#view-catalog" class="tab-link">
-            <i class="icon f7-icons if-not-md">square_list_fill</i>
-            <i class="icon material-icons if-md">view_list</i>
+          <a href="#view-pedidos" class="tab-link">
+            
+            <i class="icon f7-icons if-not-md">square_list_fill${cantpedidospendientes.value>0  ? $h` <span class="badge color-green">${cantpedidospendientes.value}</span>` : $h`` }</i>
+            <i class="icon material-icons if-md">view_list${cantpedidospendientes.value>0  ? $h` <span class="badge color-green">${cantpedidospendientes.value}</span>` : $h`` }</i>
+            
             <span class="tabbar-label">Pedidos</span>
           </a>
           <a href="#view-settings" class="tab-link">
@@ -64,7 +66,7 @@
       </div>
 
       <!-- Catalog View -->
-      <div id="view-catalog" class="view view-init tab" data-name="catalog" data-url="/catalog/">
+      <div id="view-pedidos" class="view view-init tab" data-name="pedidos" data-url="/pedidos/">
         <!-- Catalog page will be loaded here dynamically from /catalog/ route -->
       </div>
 
@@ -142,7 +144,11 @@
   </div>
 </template>
 <script>
-  export default (props, { $f7, $update, $ }) => {
+  export default (props, {$store, $f7, $update, $ }) => {
+   
+
+    const cantpedidospendientes = $store.getters.cantpedidospendientes;
+   
     // Login screen demo data
     let username = '';
     let password = '';

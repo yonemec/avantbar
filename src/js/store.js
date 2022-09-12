@@ -1,6 +1,4 @@
-
 import { createStore } from 'framework7';
-import Framework7 from 'framework7/bundle';
 
 const store = createStore({
   state: {
@@ -23,38 +21,76 @@ const store = createStore({
     ],
     productos: [],
     productosloading: false,
-    generandopedido:false
+    generandopedido:false, 
+    pedidosloading:false,   
+    pedidos:[],
   },
   getters: {
     products({ state }) {
       return state.products;
     },
+    pedidosloading: ({ state }) => state.pedidosloading,
+    pedidos: ({ state }) => state.pedidos,
+    cantpedidospendientes: ({ state }) => state.pedidos.filter(c=>c.estado.id==1).length,
     generandopedido: ({ state }) => state.generandopedido,
     productosloading: ({ state }) => state.productosloading,
     productos: ({ state }) => state.productos,    
     productospedidos: ({ state }) => state.productos.filter(c=>c.pedido>0),    
-    //cantpedida: ({state}) => state.productos.reduce((a, b) => a.pedido + b.pedido, 0),
     cantpedida: ({state}) => state.productos.reduce(function(a, b) {  return a + b.pedido; }, 0),
     importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.price); }, 0),
     
   },
+
   actions: {
+    resetearcarrito({state}){
+      state.productos.forEach(c=>c.pedido=0);
+      state.productos=[...state.productos];
+    },
     addProduct({ state }, product) {
       state.products = [...state.products, product];
     },
-    generarpedido({state}){//https://stackoverflow.com/questions/29775797/fetch-post-json-data
+    generarpedido({state,dispatch }){//https://stackoverflow.com/questions/29775797/fetch-post-json-data
 
-        console.log(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido }; }));
-        JSON.stringify(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
-        Framework7.request.json('http://localhost:8080/AvantBar/AjaxPedidosApp?')
-        .then(function (res) {         
-          console.log(res);         
-        });
+      if(state.generandopedido.value)
+      {
+        return;
+      }
+      state.generandopedido=true;
+      fetch('http://localhost:8080/AvantBar/AjaxPedidosApp', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({operacion: 1, lista: state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  } ) })
+      })
+      .then(res=>res.json())
+      .then(json=>{
+        console.log(json);
 
-        /*Framework7.request.postJSON('http://localhost:8080/AvantBar/AjaxPedidosApp', state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }))
-        .then(function (res) {
-          console.log(res.data);
-        });*/
+        if(json.status==1)
+        {
+          app.f7.dialog.alert(json.mensaje);
+        }else{
+
+          var notificationFull = app.f7.notification.create({
+            icon: '<i class="icon f7-icons">checkmark_2</i>',
+            title: 'AvantBar',
+            titleRightText: "#"+json.data,
+            subtitle: 'Su pedido fue creado con exito',
+            text: '',
+            closeTimeout: 3000,
+          });                          
+          notificationFull.open();
+          dispatch('resetearcarrito');          
+          app.f7.views.main.router.back(`/`, {reloadCurrent: true});    
+          //app.f7.views.main.router.back("/",{ force:true}); 
+        }
+      })
+      .catch(function(error) { console.log(error);    app.f7.dialog.alert(error); })
+      .finally(function() {
+        state.generandopedido=false;
+      });
     },
     setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
       const index = state.productos.findIndex(p => p.id === e.id);      
@@ -66,23 +102,12 @@ const store = createStore({
    
     getproductos({ state }) {
        state.productosloading = true;
-      /* let algo=JSON.stringify(state.productos.filter(c=>c.pedido>0).map(c=> { return  { id:c.id, cant:c.pedido };  }));
-       Framework7.request.json('http://localhost:8080/AvantBar/AjaxPedidosApp?algo=233213')
-       .then(function (res)   { console.log(res);}) 
-       .catch(function(error) { console.log(error);})
-       .finally(function() { state.productosloading = false; });*/
-
-
-       
-
-
        /*const response = await fetch('https://fakestoreapi.com/products/');
        const movies = await response.json();*/
 
        fetch('https://fakestoreapi.com/products/')
             .then(res=>res.json())
             .then(json=>{
-              console.log(json);   
               json.forEach(element => {
                 element.stock=10;
                 element.pedido=0;                
@@ -91,40 +116,47 @@ const store = createStore({
               state.productos=json;
               state.productosloading = false;      
             })
-            .catch(function(error) { console.log(error);})
-            .finally(function() { state.productosloading = false; 
-
-              Framework7.request.postJSON('http://localhost:8080/AvantBar/AjaxPedidosApp', { operacion: 1, listaitems: state.productos  })
-            .then(function (res) {
-              console.log(res.data);
-            });
-
-
-              (async () => {
+            .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+            .finally(function() {
+            state.productosloading = false; 
+             /* (async () => {
                 const rawResponse = await fetch('http://localhost:8080/AvantBar/AjaxPedidosApp', {
                   method: 'POST',
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({operacion: 1, listaitems: state.productos })
+                  body: JSON.stringify({operacion: 1, lista: state.productos.map(c=> { return  { id:c.id, cant:c.pedido };  } ) })
                 });
-                const content = await rawResponse.json();
-              
+                const content = await rawResponse.json();              
                 console.log(content);
-              })();
+              })();*/
             
             });
-      
-      /*Framework7.request.json('https://fakestoreapi.com/products/', { operacion: 0})
-      .then(function (res) {
-        state.productos=res.data;
-        console.log(res);
-        state.productosloading = false;      
-      });*/
-
-
+     
     },
+    getpedidos({ state }) {
+      state.pedidosloading = true;
+     
+      fetch('http://localhost:8080/AvantBar/AjaxPedidosApp')
+           .then(res=>res.json())
+           .then(json=>{            
+             console.log(json);
+             state.pedidosloading = false;   
+             if(json.status==1)
+             {
+               app.f7.dialog.alert(json.mensaje);
+             }else{
+              state.pedidos=json.data;
+             }
+                  
+           })
+           .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+           .finally(function() {
+            state.pedidosloading = false; 
+           });
+    
+   },
   },
 })
 export default store;

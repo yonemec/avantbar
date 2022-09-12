@@ -13,20 +13,21 @@
       </div>
     </div>
 
-    ${cantpedida.value>0? $h`
-      <div class="fab fab-extended fab-center-bottom color-green"  style="min-width: 220px;" >
-        <a href="#"  @click=${generarpedido}  >
-          <i class="icon f7-icons if-not-md">checkmark_2</i>
-          <i class="icon material-icons md-only">done_all</i>  
-          <div class="fab-text ">Confirmar pedido</div>
+    ${cantpedida.value>0? $h`      
+      <div class="fab fab-extended fab-center-bottom color-green"    style="min-width: 220px;" >        
+        <a href="#"  @click=${generarpedido} class="button-preloader button-fill ${generandopedido.value ? 'button-loading' : ''}"  >
+          <span class="preloader"></span>
+          <span> <i class="icon f7-icons if-not-md">checkmark_2</i>
+            <i class="icon material-icons md-only">done_all</i>  
+            <div class="fab-text ">Confirmar pedido</div>
+          </span>         
         </a>
       </div>
       `:'' }
     
 
 
-    <div class="page-content">
-    
+    <div class="page-content">    
       ${productos.value.length > 0 ? $h`
       <div class="block-title">Revise y confirme su carrito<div class="item-after">Importe total ${formatter.format(importepedida.value)}</div></div>
       
@@ -65,6 +66,8 @@
     const productos = $store.getters.productospedidos;
     const cantpedida = $store.getters.cantpedida;
     const importepedida = $store.getters.importepedida;
+    const generandopedido = $store.getters.generandopedido;
+    
     
     const onDeleted = (e) => {
         e.pedido=0;        
@@ -72,14 +75,16 @@
         //si no hago r efresh, swipe elimina la posicion despeus de dispatch, y nteo un item menos
         $f7.views.main.router.refreshPage();
     }   
+    
+   
+    
 
     const generarpedido=()=>{
       if(cantpedida.value>0)
         {
-          $store.dispatch('generarpedido'); 
+            $store.dispatch('generarpedido');                       
         }else{
-          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {
-            
+          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {            
           });
         }
     }
