@@ -104,8 +104,6 @@ var routes = [
     path: '/det/:idpedido/',
     async: function ({ router, to, resolve }) {
       
-     
-
       // App instance
       var app = router.app;
 

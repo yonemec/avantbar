@@ -87,7 +87,10 @@
     const productos = $store.getters.productos;
     const cantpedida = $store.getters.cantpedida;
     const importepedida = $store.getters.importepedida;
+    const gym = $store.getters.gym;
     
+    console.log("gym:"+gym.value);
+
     console.log(props);
     console.log(importepedida);
 

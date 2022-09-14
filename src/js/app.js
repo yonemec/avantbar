@@ -45,8 +45,9 @@ var app = new Framework7({
         'toggle': ['yes'],
       }
       this.form.storeFormData('#carrito', formData);
-      const algo=  this.form.getFormData('#carrito', formData);
-      console.log(algo);
+      const algo=  this.form.getFormData('#carrito', formData);     
+      var query = this.utils.parseUrlQuery(window.location.href);
+      f7.store.dispatch('setgym', query.gym=='1'?true:false);
 
 /*
       if (theme == "ios") {

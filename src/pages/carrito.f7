@@ -76,8 +76,6 @@
         $f7.views.main.router.refreshPage();
     }   
     
-   
-    
 
     const generarpedido=()=>{
       if(cantpedida.value>0)

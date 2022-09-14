@@ -15,10 +15,26 @@
     <div class="page-content">
       
         ${pedido.lista.length > 0 ? $h`
-        <div class="block-title">Pedido #${pedido.id}
-          <div class="item-after">Importe total ${pedido.importestr}</div>
-          <div class="item-after">Estado: <span class="badge" style="background-color:${pedido.estado.color}" >${pedido.estado.nombre}</span></div>          
-      </div>
+
+          <div class="block-title">Pedido #${pedido.id}</div>
+          <div class="block">
+            <div class="block-header">Importe total ${pedido.importestr}</div>
+            <div class="block-header">Estado: <span class="badge" style="background-color:${pedido.estado.color}" >${pedido.estado.nombre}</span></div>
+
+            ${pedido.estado.id==1 ? $h`
+            <div class="block-header">
+              <button class="button color-pink button-large button-fill button-preloader ${cancelandopedido.value ? 'button-loading' : ''}"
+              @click=${()=>cancelarpedido(pedido.id)}  >
+              <span class="preloader"></span>
+              <span>CANCELAR PEDIDO</span>
+            </button></div>
+            `:$h``}
+            
+
+          </div>
+
+
+        
         
         <div class="list media-list">
           <ul>
@@ -49,9 +65,18 @@
   </div>
 </template>
 <script>
-  export default (props) => {
+ export default (props, { $f7,$store }) => {
     const pedido = props.pedido;
+    const cancelandopedido = $store.getters.cancelandopedido;
+    const cancelarpedido = (id) => {
 
+      $f7.dialog.confirm('¿Cancelar pedido?', function () {
+        console.log("cancelarpedido");
+          $store.dispatch('cancelarpedido',id);
+        });
+
+      
+    };
     return $render;
   }
 </script>

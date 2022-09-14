@@ -1,3 +1,4 @@
+import { val } from 'dom7';
 import { createStore } from 'framework7';
 
 const store = createStore({
@@ -23,12 +24,16 @@ const store = createStore({
     productosloading: false,
     generandopedido:false, 
     pedidosloading:false,   
+    gym:false,   
     pedidos:[],
+    cancelandopedido:false,
   },
   getters: {
     products({ state }) {
       return state.products;
     },
+    
+    
     pedidosloading: ({ state }) => state.pedidosloading,
     pedidos: ({ state }) => state.pedidos,
     cantpedidospendientes: ({ state }) => state.pedidos.filter(c=>c.estado.id==1).length,
@@ -38,7 +43,8 @@ const store = createStore({
     productospedidos: ({ state }) => state.productos.filter(c=>c.pedido>0),    
     cantpedida: ({state}) => state.productos.reduce(function(a, b) {  return a + b.pedido; }, 0),
     importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.price); }, 0),
-    
+    gym: ({ state }) => state.gym,    
+    cancelandopedido: ({ state }) => state.cancelandopedido,
   },
 
   actions: {
@@ -92,6 +98,9 @@ const store = createStore({
         state.generandopedido=false;
       });
     },
+    setgym({ state }, valor){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
+      state.gym=valor;      
+    },
     setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
       const index = state.productos.findIndex(p => p.id === e.id);      
       if (index > -1) {
@@ -99,7 +108,36 @@ const store = createStore({
         state.productos = [...state.productos];
       }      
     },
-   
+    cancelarpedido({ state ,dispatch}, idpedido){
+
+      if(state.cancelandopedido.value)
+      {
+        return;
+      }
+          state.cancelandopedido=true;
+          fetch('http://localhost:8080/AvantBar/AjaxPedidosApp?operacion=99&pedido='+idpedido)
+          .then(res=>res.json())
+          .then(json=>{
+            state.cancelandopedido = false; 
+            if(json.status==1)
+            {
+              app.f7.dialog.alert(json.mensaje);
+            }else{
+              //app.f7.views.main.router.back(`/`, {reloadCurrent: true});
+              //app.f7.views[1].router.back("/pedidos",{ force:true, ignoreCache:true}); //posicion 2 de tab, main es principal
+              app.f7.views[1].router.back(); //posicion 2 de tab, main es principal
+              dispatch('getpedidos');
+            }
+            state.productosloading = false;  
+                
+          })
+          .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+          .finally(function() {
+            state.cancelandopedido = false; 
+          });
+
+    },
+    
     getproductos({ state }) {
        state.productosloading = true;
        /*const response = await fetch('https://fakestoreapi.com/products/');
