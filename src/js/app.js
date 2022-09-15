@@ -1,6 +1,8 @@
 import $ from 'dom7';
 import Framework7 from 'framework7/bundle';
 
+
+
 // Import F7 Styles
 import 'framework7/css/bundle';
 
@@ -16,6 +18,7 @@ import store from './store.js';
 
 // Import main app component
 import App from '../app.f7';
+
 
 
 var app = new Framework7({
@@ -37,17 +40,19 @@ var app = new Framework7({
     init: function () {
       var f7 = this;      
       var theme = this.theme;
-      console.log(theme);
-      var formData = {
-        'name': 'John',
-        'email': 'john@doe.com',
-        'gender': 'female',
-        'toggle': ['yes'],
+      const useractual=  this.form.getFormData('#user');     
+      console.log(useractual);
+      if(window.location.search.length>0)
+      {
+        var query = this.utils.parseUrlQuery(window.location.href);
+        f7.store.dispatch('setgym', query.gym=='1'?true:false);
+        f7.store.dispatch('setmesa', query.m);  
       }
-      this.form.storeFormData('#carrito', formData);
-      const algo=  this.form.getFormData('#carrito', formData);     
-      var query = this.utils.parseUrlQuery(window.location.href);
-      f7.store.dispatch('setgym', query.gym=='1'?true:false);
+      if(useractual)
+      {
+          f7.store.dispatch('setusuario', useractual);                      
+      }
+      f7.store.dispatch('autologin');    
 
 /*
       if (theme == "ios") {

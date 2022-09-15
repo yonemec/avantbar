@@ -29,20 +29,28 @@
 
     <div class="page-content">    
       ${productos.value.length > 0 ? $h`
-      <div class="block-title">Revise y confirme su carrito<div class="item-after">Importe total ${formatter.format(importepedida.value)}</div></div>
+
+
+        <div class="block-title">Revise y confirme su pedido</div>
+          <div class="block">
+            <div class="block-header">Importe total ${formatter.format(importepedida.value)}</div>
+            <div class="block-header">Mesa ${mesa.value}</div>
+          </div>
+
+
       
       <div class="list media-list">
         <ul>
           ${productos.value.map((item) => $h`
             <li class="swipeout"   @swipeout:deleted=${()=>onDeleted(item)}>
               <div class="item-content swipeout-content">
-                <div class="item-media"><img src="${item.image}"
+                <div class="item-media"><img src="${item.imagen}"
                     width="40" /></div>
                 <div class="item-inner">
                   <div class="item-title-row">
-                    <div class="item-title">${item.title}</div>                    
+                    <div class="item-title">${item.nombre}</div>                    
                   </div>
-                  <div class="item-text">${item.pedido} * ${formatter.format(item.price)} = ${formatter.format(item.price*item.pedido)}</div>
+                  <div class="item-text">${item.pedido} * ${formatter.format(item.precio)} = ${formatter.format(item.precio*item.pedido)}</div>
   
                 </div>
               </div>
@@ -63,10 +71,13 @@
 </template>
 <script>
   export default (props, {$f7, $store, $, $onMounted, }) => {
+    
+    
     const productos = $store.getters.productospedidos;
     const cantpedida = $store.getters.cantpedida;
     const importepedida = $store.getters.importepedida;
     const generandopedido = $store.getters.generandopedido;
+    const mesa = $store.getters.mesa;
     
     
     const onDeleted = (e) => {

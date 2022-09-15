@@ -14,6 +14,7 @@ import Productos from '../pages/productos.f7';
 import Carrito from '../pages/carrito.f7';
 import Pedidos from '../pages/pedidos.f7';
 import PedidosDet from '../pages/pedidosdet.f7';
+import Mesas from '../pages/mesas.f7';
 
 var routes = [
   {
@@ -48,10 +49,13 @@ var routes = [
     path: '/settings/',
     component: SettingsPage,
   },
-
   {
     path: '/dynamic-route/blog/:blogId/post/:postId/',
     component: DynamicRoutePage,
+  },
+  {
+    path: '/mesas',
+    component: Mesas,
   },
   {
     path: '/request-and-load/user/:userId/',
@@ -114,7 +118,7 @@ var routes = [
       var idpedido = to.params.idpedido;
       var pedido=app.store.state.pedidos.find(c=>c.id==idpedido);
 
-      fetch('http://localhost:8080/AvantBar/AjaxPedidosDetApp?pedido='+idpedido)
+      fetch(urlrequest+'/AjaxPedidosDetApp?pedido='+idpedido)
       .then(res=>res.json())
       .then(json=>{            
         console.log(json);
@@ -135,20 +139,13 @@ var routes = [
                     pedido: pedido,
                   }
                 }
-              );
-              
+              );              
         }
-
-
-             
       })
       .catch(function(error) { console.log(error);  console.log(app);   app.dialog.alert(error); })
       .finally(function() {
         app.preloader.hide();
       });
-
-       
-      
     },
   },
   {

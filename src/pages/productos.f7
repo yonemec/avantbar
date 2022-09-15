@@ -1,5 +1,5 @@
 <template>
-  <div class="page" data-name="product">
+  <div class="page" data-name="productos">
     <div class="navbar">
       <div class="navbar-bg"></div>
       <div class="navbar-inner sliding">
@@ -23,8 +23,8 @@
 
     <div class="fab fab-extended fab-center-bottom"   style="min-width: 220px;">
       <a href="#"  @click=${confirmarcarrito}  >
-        <i class="icon f7-icons if-not-md">cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>
         <i class="icon material-icons md-only">shopping_cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
+        <i class="icon f7-icons if-not-md">cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
         <div class="fab-text">${importepedida.value>0?formatter.format(importepedida.value):'Carrito vacio'}</div>
       </a>
     </div>
@@ -35,31 +35,38 @@
       ${productos.value.length > 0 ? $h`
         <div class="list media-list ">
           <ul>
-            <li class="item-divider">Empanadas</li>
             ${productos.value.map((item) => $h`
-              <li>
-                <a href="#" class="item-content">
-                  <div class="item-media"><img src="${item.image}"
-                      width="80" /></div>
-                  <div class="item-inner">
-                    <div class="item-title-row">
-                      <div class="item-title">${item.title}</div>
-                      <div class="item-after">$ ${item.price}</div>
-                    </div>
-                    <div class="item-text  ">${item.description}</div>    
-                    <div class="col">
-                      <div class="stepper stepper-large stepper-round stepper-fill stepper-init">
-                        <div class="stepper-button-minus ${item.pedido==0 ? 'disabled' : ''}"  @click=${()=>stepperminus(item)}  ></div>
-                        <div class="stepper-input-wrap">
-                          <input type="text" value="${item.pedido}" min="0" max="${item.stock}" step="1" readonly />
+                ${item.esgrupo? $h`
+                  <li class="item-divider"  >${item.nombre}</li>
+                  `:
+                  $h`
+                  <li>
+                    <a href="#" class="item-content">
+                      <div class="item-media"><img src="${item.imagen}"
+                          width="80" /></div>
+                      <div class="item-inner">
+                        <div class="item-title-row">
+                          <div class="item-title">${item.nombre}</div>
+                          <div class="item-after">${formatter.format(item.precio)}</div>
                         </div>
-                        <div class="stepper-button-plus ${item.pedido==item.stock ? 'disabled' : ''}"  @click=${()=>stepperplus(item)}  ></div>
+                        <div class="item-text  ">${item.descripcion}</div>    
+                        <div class="col">
+                          <div class="stepper stepper-large stepper-round stepper-fill stepper-init">
+                            <div class="stepper-button-minus ${item.pedido==0 ? 'disabled' : ''}"  @click=${()=>stepperminus(item)}  ></div>
+                            <div class="stepper-input-wrap">
+                              <input type="text" value="${item.pedido}" min="0" max="${item.stock}" step="1" readonly />
+                            </div>
+                            <div class="stepper-button-plus ${item.pedido==item.stock ? 'disabled' : ''}"  @click=${()=>stepperplus(item)}  ></div>
+                          </div>
+                        </div>
+        
                       </div>
-                    </div>
-    
-                  </div>
-                </a>
-              </li>
+                    </a>
+                  </li>
+                  `
+                }
+
+             
             `)}
 
             <li class="" style="height: 60px;"  ></li>
@@ -87,13 +94,9 @@
     const productos = $store.getters.productos;
     const cantpedida = $store.getters.cantpedida;
     const importepedida = $store.getters.importepedida;
+    const mesa = $store.getters.mesa;
     const gym = $store.getters.gym;
     
-    console.log("gym:"+gym.value);
-
-    console.log(props);
-    console.log(importepedida);
-
     const stepperplus =(e)=>{
       e.pedido=e.pedido+1;
       $store.dispatch('setproducto',e);
@@ -107,13 +110,15 @@
     const confirmarcarrito=()=>{
         if(cantpedida.value>0)
         {
-          $f7.views.main.router.navigate({
-			    			  path: '/carrito',			    			  
-			    			});
+            console.log(mesa);
+            if(mesa.value==0)
+            {
+              $f7.views.main.router.navigate({path: '/mesas'});
+            }else{
+              $f7.views.main.router.navigate({path: '/carrito'});
+            }            
         }else{
-          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {
-            
-          });
+          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {});
         }
     };
 

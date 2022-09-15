@@ -1,0 +1,56 @@
+<template>
+  <div class="page">
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a href="#" class="back link">
+            <i class="icon icon-back"></i>
+            <span class="if-not-md">Volver</span>
+          </a>
+        </div>
+        <div class="title">Mesas</div>
+      </div>
+    </div>
+    <div class="page-content">
+      
+        ${listamesas.value.length > 0 ? $h`
+        
+        <div class="list links-list">
+          <ul>
+            ${listamesas.value.map((mesa) => $h`
+              <li>
+                <a href="#" @click="${()=>setmesa(mesa)}" >${mesa.nombre}</a>
+              </li>
+            `)}
+          </ul>
+        </div>
+        ` : $h`
+          <div class="block block-strong">
+            Sin mesas
+          </div>
+        `}    
+      
+    </div>
+  </div>
+</template>
+<script>
+ export default (props, { $f7,$store }) => {
+    const listamesas = $store.getters.listamesas;
+    if(listamesas.value.length==0)
+    {
+      $store.dispatch('getmesas');
+    }
+
+    const setmesa =(e)=>{
+      console.log(e);
+      //$store.mesa=e.id;
+      $store.dispatch('setmesa',e.id);
+      $f7.views.main.router.navigate({path: '/carrito'});
+    };
+    
+
+    return $render;
+  }
+</script>
+

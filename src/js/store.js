@@ -1,6 +1,7 @@
 import { val } from 'dom7';
 import { createStore } from 'framework7';
 
+
 const store = createStore({
   state: {
     products: [
@@ -27,13 +28,17 @@ const store = createStore({
     gym:false,   
     pedidos:[],
     cancelandopedido:false,
+    mesa:0,
+    listamesas:[],
+    usuarioloading:false,
+    usuario:{id:0,imei:0},
   },
   getters: {
     products({ state }) {
       return state.products;
-    },
-    
-    
+    },    
+    mesa: ({ state }) => state.mesa,
+    listamesas: ({ state }) => state.listamesas,
     pedidosloading: ({ state }) => state.pedidosloading,
     pedidos: ({ state }) => state.pedidos,
     cantpedidospendientes: ({ state }) => state.pedidos.filter(c=>c.estado.id==1).length,
@@ -42,9 +47,11 @@ const store = createStore({
     productos: ({ state }) => state.productos,    
     productospedidos: ({ state }) => state.productos.filter(c=>c.pedido>0),    
     cantpedida: ({state}) => state.productos.reduce(function(a, b) {  return a + b.pedido; }, 0),
-    importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.price); }, 0),
+    importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.precio); }, 0),
     gym: ({ state }) => state.gym,    
     cancelandopedido: ({ state }) => state.cancelandopedido,
+    usuario:({ state }) => state.usuario,
+    usuarioloading: ({ state }) => state.usuarioloading,
   },
 
   actions: {
@@ -56,13 +63,13 @@ const store = createStore({
       state.products = [...state.products, product];
     },
     generarpedido({state,dispatch }){//https://stackoverflow.com/questions/29775797/fetch-post-json-data
-
-      if(state.generandopedido.value)
+      if(state.generandopedido)
       {
         return;
       }
       state.generandopedido=true;
-      fetch('http://localhost:8080/AvantBar/AjaxPedidosApp', {
+      console.log("mesa"+state.mesa);
+      fetch(urlrequest+'/AjaxPedidosApp?mesa='+state.mesa, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -88,8 +95,9 @@ const store = createStore({
             closeTimeout: 3000,
           });                          
           notificationFull.open();
-          dispatch('resetearcarrito');          
-          app.f7.views.main.router.back(`/`, {reloadCurrent: true});    
+          dispatch('resetearcarrito'); 
+          dispatch('getpedidos');         
+          app.f7.views.main.router.navigate(`/`, {reloadCurrent: true});             
           //app.f7.views.main.router.back("/",{ force:true}); 
         }
       })
@@ -101,21 +109,66 @@ const store = createStore({
     setgym({ state }, valor){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
       state.gym=valor;      
     },
-    setproducto({ state }, e){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
+    setmesa({ state }, valor){
+      console.log("setmesa:",valor);
+      state.mesa=valor;      
+    },
+    setproducto({ state }, e){
       const index = state.productos.findIndex(p => p.id === e.id);      
       if (index > -1) {
         state.productos[index] = e;
         state.productos = [...state.productos];
       }      
     },
+    setusuario({ state }, e){
+        state.usuario=e;
+    },
+    autologin({ state }){       
+      if(state.usuarioloading)
+      {
+        return;
+      }
+          state.usuarioloading=true;
+          fetch(urlrequest+'/AjaxUsuariosApp?idautologin='+state.usuario.id+"&imei="+state.usuario.imei)
+          .then(res=>res.json())
+          .then(json=>{
+            state.usuarioloading = false; 
+            if(json.status==1)
+            {
+              app.f7.dialog.alert(json.mensaje);
+            }else{
+                console.log(json.data);
+                const user=json.data;
+                state.usuario=user;
+                console.log(user);
+                app.f7.form.storeFormData('#user', user);
+                var algo= app.f7.form.getFormData('#user');   
+                console.log(algo);
+                var notificationFull = app.f7.notification.create({
+                  icon: '<i class="icon f7-icons">person_fill</i>',
+                  title: 'AvantBar',
+                  titleRightText: "",
+                  subtitle: 'Bienvenido  '+user.nombre,
+                  text: '',
+                  closeTimeout: 3000,
+                });                          
+                notificationFull.open();  
+            }
+          })
+          .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+          .finally(function() {
+            state.usuarioloading = false; 
+          });
+
+    },
     cancelarpedido({ state ,dispatch}, idpedido){
 
-      if(state.cancelandopedido.value)
+      if(state.cancelandopedido)
       {
         return;
       }
           state.cancelandopedido=true;
-          fetch('http://localhost:8080/AvantBar/AjaxPedidosApp?operacion=99&pedido='+idpedido)
+          fetch(urlrequest+'/AjaxPedidosApp?operacion=99&pedido='+idpedido)
           .then(res=>res.json())
           .then(json=>{
             state.cancelandopedido = false; 
@@ -127,36 +180,42 @@ const store = createStore({
               //app.f7.views[1].router.back("/pedidos",{ force:true, ignoreCache:true}); //posicion 2 de tab, main es principal
               app.f7.views[1].router.back(); //posicion 2 de tab, main es principal
               dispatch('getpedidos');
+              var notificationFull = app.f7.notification.create({
+                icon: '<i class="icon f7-icons">checkmark_2</i>',
+                title: 'AvantBar',
+                titleRightText: "",
+                subtitle: 'Su pedido fue cancelado con exito',
+                text: '',
+                closeTimeout: 3000,
+              });                          
+              notificationFull.open();              
             }
-            state.productosloading = false;  
                 
           })
           .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
           .finally(function() {
             state.cancelandopedido = false; 
           });
-
     },
-    
     getproductos({ state }) {
        state.productosloading = true;
        /*const response = await fetch('https://fakestoreapi.com/products/');
        const movies = await response.json();*/
 
-       fetch('https://fakestoreapi.com/products/')
+      // fetch('https://fakestoreapi.com/products/')
+      fetch(urlrequest+'/AjaxItemsApp')      
             .then(res=>res.json())
             .then(json=>{
-              json.forEach(element => {
+              json.data.forEach(element => {
                 element.stock=10;
                 element.pedido=0;                
               });
-              console.log(json);           
-              state.productos=json;
-              state.productosloading = false;      
+              console.log(json);
+              state.productos=json.data;              
             })
             .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
             .finally(function() {
-            state.productosloading = false; 
+              state.productosloading = false; 
              /* (async () => {
                 const rawResponse = await fetch('http://localhost:8080/AvantBar/AjaxPedidosApp', {
                   method: 'POST',
@@ -169,14 +228,32 @@ const store = createStore({
                 const content = await rawResponse.json();              
                 console.log(content);
               })();*/
-            
             });
-     
     },
+    getmesas({ state }) {
+      app.f7.preloader.show();
+      fetch(urlrequest+'/AjaxMesas?operacion=0&estado=1')
+           .then(res=>res.json())
+           .then(json=>{        
+             app.f7.preloader.hide();    
+             console.log(json);            
+             if(json.status==1)
+             {
+               app.f7.dialog.alert(json.mensaje);
+             }else{
+              state.listamesas=json.data;
+             }
+           })
+           .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+           .finally(function() {
+              app.f7.preloader.hide();
+           });
+    
+   },
     getpedidos({ state }) {
       state.pedidosloading = true;
      
-      fetch('http://localhost:8080/AvantBar/AjaxPedidosApp')
+      fetch(urlrequest+'/AjaxPedidosApp')
            .then(res=>res.json())
            .then(json=>{            
              console.log(json);
@@ -186,8 +263,7 @@ const store = createStore({
                app.f7.dialog.alert(json.mensaje);
              }else{
               state.pedidos=json.data;
-             }
-                  
+             }                  
            })
            .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
            .finally(function() {
