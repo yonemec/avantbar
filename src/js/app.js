@@ -20,7 +20,6 @@ import store from './store.js';
 import App from '../app.f7';
 
 
-
 var app = new Framework7({
  
   name: 'AvantBar', // App name
@@ -45,8 +44,14 @@ var app = new Framework7({
       if(window.location.search.length>0)
       {
         var query = this.utils.parseUrlQuery(window.location.href);
-        f7.store.dispatch('setgym', query.gym=='1'?true:false);
-        f7.store.dispatch('setmesa', query.m);  
+        if(query.gym)
+          {
+            f7.store.dispatch('setgym', query.gym=='1'?true:false);
+          }
+          if(query.m)
+          {
+            f7.store.dispatch('setmesa', query.m);  
+          }
       }
       if(useractual)
       {

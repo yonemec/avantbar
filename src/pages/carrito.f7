@@ -93,7 +93,7 @@
         {
             $store.dispatch('generarpedido');                       
         }else{
-          $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {            
+           $f7.dialog.alert('Su carrito esta vacio!<br>Por favor agregue productos al carrito', () => {            
           });
         }
     }

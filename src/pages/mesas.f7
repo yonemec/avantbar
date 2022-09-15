@@ -43,8 +43,6 @@
     }
 
     const setmesa =(e)=>{
-      console.log(e);
-      //$store.mesa=e.id;
       $store.dispatch('setmesa',e.id);
       $f7.views.main.router.navigate({path: '/carrito'});
     };

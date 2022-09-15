@@ -44,7 +44,7 @@ const store = createStore({
     cantpedidospendientes: ({ state }) => state.pedidos.filter(c=>c.estado.id==1).length,
     generandopedido: ({ state }) => state.generandopedido,
     productosloading: ({ state }) => state.productosloading,
-    productos: ({ state }) => state.productos,    
+    productos: ({ state }) => state.gym?state.productos.filter(c=>c.grupo.id==6): state.productos,    
     productospedidos: ({ state }) => state.productos.filter(c=>c.pedido>0),    
     cantpedida: ({state}) => state.productos.reduce(function(a, b) {  return a + b.pedido; }, 0),
     importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.precio); }, 0),
@@ -67,8 +67,7 @@ const store = createStore({
       {
         return;
       }
-      state.generandopedido=true;
-      console.log("mesa"+state.mesa);
+      state.generandopedido=true;      
       fetch(urlrequest+'/AjaxPedidosApp?mesa='+state.mesa, {
         method: 'POST',
         headers: {
@@ -79,8 +78,6 @@ const store = createStore({
       })
       .then(res=>res.json())
       .then(json=>{
-        console.log(json);
-
         if(json.status==1)
         {
           app.f7.dialog.alert(json.mensaje);
@@ -101,7 +98,7 @@ const store = createStore({
           //app.f7.views.main.router.back("/",{ force:true}); 
         }
       })
-      .catch(function(error) { console.log(error);    app.f7.dialog.alert(error); })
+      .catch(function(error) {    app.f7.dialog.alert(error); })
       .finally(function() {
         state.generandopedido=false;
       });
@@ -110,7 +107,7 @@ const store = createStore({
       state.gym=valor;      
     },
     setmesa({ state }, valor){
-      console.log("setmesa:",valor);
+      console.log("setmesa:",valor);      
       state.mesa=valor;      
     },
     setproducto({ state }, e){
@@ -137,13 +134,10 @@ const store = createStore({
             {
               app.f7.dialog.alert(json.mensaje);
             }else{
-                console.log(json.data);
                 const user=json.data;
                 state.usuario=user;
-                console.log(user);
                 app.f7.form.storeFormData('#user', user);
                 var algo= app.f7.form.getFormData('#user');   
-                console.log(algo);
                 var notificationFull = app.f7.notification.create({
                   icon: '<i class="icon f7-icons">person_fill</i>',
                   title: 'AvantBar',
@@ -155,7 +149,7 @@ const store = createStore({
                 notificationFull.open();  
             }
           })
-          .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+          .catch(function(error) {   app.f7.dialog.alert(error); })
           .finally(function() {
             state.usuarioloading = false; 
           });
@@ -192,12 +186,12 @@ const store = createStore({
             }
                 
           })
-          .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+          .catch(function(error) {   app.f7.dialog.alert(error); })
           .finally(function() {
             state.cancelandopedido = false; 
           });
     },
-    getproductos({ state }) {
+    getitems({ state }) {
        state.productosloading = true;
        /*const response = await fetch('https://fakestoreapi.com/products/');
        const movies = await response.json();*/
@@ -209,11 +203,12 @@ const store = createStore({
               json.data.forEach(element => {
                 element.stock=10;
                 element.pedido=0;                
-              });
-              console.log(json);
-              state.productos=json.data;              
+              });             
+              state.productos=json.data;      
+              console.log(json.data);  
+
             })
-            .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+            .catch(function(error) {   app.f7.dialog.alert(error); })
             .finally(function() {
               state.productosloading = false; 
              /* (async () => {
@@ -236,7 +231,7 @@ const store = createStore({
            .then(res=>res.json())
            .then(json=>{        
              app.f7.preloader.hide();    
-             console.log(json);            
+                      
              if(json.status==1)
              {
                app.f7.dialog.alert(json.mensaje);
@@ -244,7 +239,7 @@ const store = createStore({
               state.listamesas=json.data;
              }
            })
-           .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+           .catch(function(error) {   app.f7.dialog.alert(error); })
            .finally(function() {
               app.f7.preloader.hide();
            });
@@ -255,8 +250,7 @@ const store = createStore({
      
       fetch(urlrequest+'/AjaxPedidosApp')
            .then(res=>res.json())
-           .then(json=>{            
-             console.log(json);
+           .then(json=>{                        
              state.pedidosloading = false;   
              if(json.status==1)
              {
@@ -265,7 +259,7 @@ const store = createStore({
               state.pedidos=json.data;
              }                  
            })
-           .catch(function(error) { console.log(error);   app.f7.dialog.alert(error); })
+           .catch(function(error) {   app.f7.dialog.alert(error); })
            .finally(function() {
             state.pedidosloading = false; 
            });

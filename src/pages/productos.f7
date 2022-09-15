@@ -78,7 +78,7 @@
           <a
             href="#"
             class="button button-fill button-preloader ${productosloading.value ? 'button-loading' : ''}"
-            @click=${getproductos}
+            @click=${getitems}
           >
             <span class="preloader"></span>
             <span>Cargar productos</span>
@@ -89,7 +89,7 @@
   </div>
 </template>
 <script>
-  export default (props, { $f7,$store, $, $onMounted, $on }) => {
+  export default (props, { $f7,$store, $, $on, $onBeforeMount, $onMounted, $onBeforeUnmount, $onUnmounted  }) => {
     const productosloading = $store.getters.productosloading;
     const productos = $store.getters.productos;
     const cantpedida = $store.getters.cantpedida;
@@ -122,10 +122,15 @@
         }
     };
 
-    const getproductos = () => {
-      $store.dispatch('getproductos');
+    const getitems = () => {
+      $store.dispatch('getitems');
     };
-    getproductos();
+    if($store.state.productos.length==0)
+    {
+      getitems();
+    }
+   
+
     return $render;
   };
 </script>
