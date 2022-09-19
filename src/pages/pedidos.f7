@@ -7,22 +7,32 @@
       </div>
     </div>
     <div class="page-content">
-      <div class="list">
-        <ul>
-          ${pedidos.value.map((pedido) => $h`
-          <li>
-            <a href="/det/${pedido.id}/" class="item-link item-content">
-              <div class="item-inner">
-                <div class="item-title">
-                  <div class="item-header">Fecha: ${pedido.fastr}</div>Estado: <span class="badge" style="background-color:${pedido.estado.color}" >${pedido.estado.nombre}</span>
+
+      
+      ${pedidos.value.length==0 ? $h`
+        <div class="block  inset">
+          <div class="block-title">Sin pedidos creados</div>
+          </div>
+        `: 
+        $h`
+        <div class="list">
+          <ul>
+            ${pedidos.value.map((pedido) => $h`
+            <li>
+              <a href="/det/${pedido.id}/" class="item-link item-content">
+                <div class="item-inner">
+                  <div class="item-title">
+                    <div class="item-header">Fecha: ${pedido.fastr}</div>Estado: <span class="badge" style="background-color:${pedido.estado.color}" >${pedido.estado.nombre}</span>
+                  </div>
+                  <div class="item-after">${pedido.importestr}</div>
                 </div>
-                <div class="item-after">${pedido.importestr}</div>
-              </div>
-            </a>
-          </li>   
-          `)}       
-        </ul>
-      </div>     
+              </a>
+            </li>   
+            `)}       
+          </ul>
+        </div>   
+        `}
+       
     </div>
   </div>
 </template>

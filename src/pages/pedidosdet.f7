@@ -41,7 +41,7 @@
             ${pedido.lista.map((item) => $h`
               <li>
                 <div class="item-content">
-                  <div class="item-media"><img src="${item.imagen}"
+                  <div class="item-media"><img style="border-radius: 10%;" src="/DownloadFileServlet?imagen=${item.imagen}"
                       width="40" /></div>
                   <div class="item-inner">
                     <div class="item-title-row">
@@ -70,7 +70,7 @@
     const cancelandopedido = $store.getters.cancelandopedido;
     const cancelarpedido = (id) => {
 
-      $f7.dialog.confirm('¿Cancelar pedido?', function () {
+      $f7.dialog.confirm('¿CANCELAR PEDIDO?', function () {
         console.log("cancelarpedido");
           $store.dispatch('cancelarpedido',id);
         });

@@ -1,5 +1,6 @@
 import { val } from 'dom7';
 import { createStore } from 'framework7';
+import { getAuth, signInWithPopup, GoogleAuthProvider , OAuthProvider, FacebookAuthProvider  } from "firebase/auth";
 
 
 const store = createStore({
@@ -31,7 +32,8 @@ const store = createStore({
     mesa:0,
     listamesas:[],
     usuarioloading:false,
-    usuario:{id:0,imei:0},
+    loginloading:false,
+    usuario:{id:0, nombre:'', imei:0, uid:null},
   },
   getters: {
     products({ state }) {
@@ -52,6 +54,8 @@ const store = createStore({
     cancelandopedido: ({ state }) => state.cancelandopedido,
     usuario:({ state }) => state.usuario,
     usuarioloading: ({ state }) => state.usuarioloading,
+    loginloading: ({ state }) => state.loginloading,
+    
   },
 
   actions: {
@@ -68,7 +72,7 @@ const store = createStore({
         return;
       }
       state.generandopedido=true;      
-      fetch(urlrequest+'/AjaxPedidosApp?mesa='+state.mesa, {
+      fetch(urlrequest+'AjaxPedidosApp?mesa='+state.mesa+'&idautologin='+state.usuario.id+'&imei='+state.usuario.imei, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -117,16 +121,186 @@ const store = createStore({
         state.productos = [...state.productos];
       }      
     },
-    setusuario({ state }, e){
-        state.usuario=e;
+    setusuario({ state,dispatch }, e){
+        state.usuario=e;        
+        dispatch('saludar');
     },
-    autologin({ state }){       
-      if(state.usuarioloading)
-      {
-        return;
-      }
+    crearcuenta({state,dispatch},user)
+    {
+     
+          if(state.loginloading)
+          {
+            return;
+          }
+            console.log(user);
+        
+            state.loginloading=true;
+            fetch(urlrequest+'AjaxUsuariosApp?operacion=1&idautologin='+state.usuario.id+'&imei='+state.usuario.imei, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({id: state.usuario.id, imei:state.usuario.imei, uid:user.uid, correo:user.email, nombre:user.displayName, imagen:user.photoURL  } )
+            })
+            .then(res=>res.json())
+            .then(json=>{
+              state.loginloading = false; 
+              if(json.status==1)
+              {
+                app.f7.dialog.alert(json.mensaje);
+              }else{
+                  const user=json.data;
+                  state.usuario=user;                                    
+                  app.f7.form.storeFormData('#user', user);
+                  var algo= app.f7.form.getFormData('#user');   
+                  dispatch('saludar');
+                  dispatch('getpedidos');
+                 
+              }
+            })
+            .catch(function(error) {   app.f7.dialog.alert(error); })
+            .finally(function() {
+              state.loginloading = false; 
+            });
+
+    },
+    logingoogle({ state,dispatch }){
+            const provider = new GoogleAuthProvider();
+              provider.setCustomParameters({
+              // Localize the Apple authentication screen in French.
+              locale: 'es'
+            });
+            const auth = getAuth();
+            auth.languageCode = 'es';
+            signInWithPopup(auth, provider)
+              .then((result) => {
+                console.log(result);
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                console.log(token);
+                // The signed-in user info.
+                const user = result.user;
+                dispatch('crearcuenta',user);
+                console.log(user);
+                // ...
+              }).catch((error) => {
+                console.log(error);
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+                // ...
+              });
+    },
+   loginfacebook({ state,dispatch }){
+                  const provider = new FacebookAuthProvider();
+                    provider.setCustomParameters({
+                    // Localize the Apple authentication screen in French.
+                    locale: 'es'
+                  });
+                  const auth = getAuth();
+                  auth.languageCode = 'es';
+                  signInWithPopup(auth, provider)
+                  .then((result) => {
+                    // The signed-in user info.
+                    const user = result.user;
+                    dispatch('crearcuenta',user);
+                    console.log(user);
+                    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+                    const credential = FacebookAuthProvider.credentialFromResult(result);
+                    const accessToken = credential.accessToken;
+                
+                    // ...
+                  })
+                  .catch((error) => {
+                    // Handle Errors here.
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    // The email of the user's account used.
+                    const email = error.customData.email;
+                    // The AuthCredential type that was used.
+                    const credential = FacebookAuthProvider.credentialFromError(error);
+                
+                    // ...
+                  });
+    },
+    loginapple({ state , dispatch }){
+      const provider = new OAuthProvider('apple.com');
+      provider.addScope('email');
+      provider.addScope('name');
+      
+      provider.setCustomParameters({
+        // Localize the Apple authentication screen in French.
+        locale: 'es'
+      });
+      const auth = getAuth();
+      auth.languageCode = 'es';
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log(result);
+           // The signed-in user info.
+            console.log(result);
+            const user = result.user;
+            dispatch('crearcuenta',user);
+            console.log(user);
+            // Apple credential
+            const credential = OAuthProvider.credentialFromResult(result);
+            console.log(credential);
+            const accessToken = credential.accessToken;
+            const idToken = credential.idToken;
+            console.log(accessToken);
+            console.log(idToken);
+          // ...
+        }).catch((error) => {
+          console.log(error);
+                // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.customData.email;
+            // The credential that was used.
+            const credential = OAuthProvider.credentialFromError(error);
+          // ...
+        });
+  },
+    salir({state,dispatch}){
+        app.f7.form.storeFormData('#user', null);
+        state.usuario={id:0, nombre:'',imei:0,uid:null};
+        state.pedidos=[];
+        state.productos.forEach(element => {
+          element.pedido=0;                
+        });             
+        state.productos=[...state.productos];     
+        dispatch('crearinvitado');  
+    },
+    saludar({ state }){
+
+
+      console.log("saludar");
+      var notificationFull = app.f7.notification.create({
+        icon: '<i class="icon f7-icons">person_fill</i>',
+        title: 'AvantBar',
+        titleRightText: "",
+        subtitle: 'Bienvenido  '+state.usuario.nombre,
+        text: '',
+        closeTimeout: 3000,
+      });                          
+      notificationFull.open();  
+    },
+    crearinvitado({ state,dispatch }){    //login o crear usuario  
+      
+        if(state.usuarioloading)
+        {
+          return;
+        }
+       
           state.usuarioloading=true;
-          fetch(urlrequest+'/AjaxUsuariosApp?idautologin='+state.usuario.id+"&imei="+state.usuario.imei)
+          fetch(urlrequest+'AjaxUsuariosApp?idautologin='+state.usuario.id+'&imei='+state.usuario.imei)
           .then(res=>res.json())
           .then(json=>{
             state.usuarioloading = false; 
@@ -138,15 +312,7 @@ const store = createStore({
                 state.usuario=user;
                 app.f7.form.storeFormData('#user', user);
                 var algo= app.f7.form.getFormData('#user');   
-                var notificationFull = app.f7.notification.create({
-                  icon: '<i class="icon f7-icons">person_fill</i>',
-                  title: 'AvantBar',
-                  titleRightText: "",
-                  subtitle: 'Bienvenido  '+user.nombre,
-                  text: '',
-                  closeTimeout: 3000,
-                });                          
-                notificationFull.open();  
+                dispatch('saludar');
             }
           })
           .catch(function(error) {   app.f7.dialog.alert(error); })
@@ -162,7 +328,7 @@ const store = createStore({
         return;
       }
           state.cancelandopedido=true;
-          fetch(urlrequest+'/AjaxPedidosApp?operacion=99&pedido='+idpedido)
+          fetch(urlrequest+'AjaxPedidosApp?operacion=99&pedido='+idpedido+'&idautologin='+state.usuario.id+'&imei='+state.usuario.imei)
           .then(res=>res.json())
           .then(json=>{
             state.cancelandopedido = false; 
@@ -197,11 +363,10 @@ const store = createStore({
        const movies = await response.json();*/
 
       // fetch('https://fakestoreapi.com/products/')
-      fetch(urlrequest+'/AjaxItemsApp')      
+      fetch(urlrequest+'AjaxItemsApp?idautologin='+state.usuario.id+'&imei='+state.usuario.imei)      
             .then(res=>res.json())
             .then(json=>{
               json.data.forEach(element => {
-                element.stock=10;
                 element.pedido=0;                
               });             
               state.productos=json.data;      
@@ -227,7 +392,7 @@ const store = createStore({
     },
     getmesas({ state }) {
       app.f7.preloader.show();
-      fetch(urlrequest+'/AjaxMesas?operacion=0&estado=1')
+      fetch(urlrequest+'AjaxMesas?operacion=0&estado=1&idautologin='+state.usuario.id+'&imei='+state.usuario.imei)
            .then(res=>res.json())
            .then(json=>{        
              app.f7.preloader.hide();    
@@ -246,23 +411,26 @@ const store = createStore({
     
    },
     getpedidos({ state }) {
-      state.pedidosloading = true;
+      if(state.usuario.id>0)
+      {
+        state.pedidosloading = true;     
+        fetch(urlrequest+'AjaxPedidosApp?idautologin='+state.usuario.id+'&imei='+state.usuario.imei)
+             .then(res=>res.json())
+             .then(json=>{                        
+               state.pedidosloading = false;   
+               if(json.status==1)
+               {
+                 app.f7.dialog.alert(json.mensaje);
+               }else{
+                state.pedidos=json.data;
+               }                  
+             })
+             .catch(function(error) {   app.f7.dialog.alert(error); })
+             .finally(function() {
+              state.pedidosloading = false; 
+             });
+      }
      
-      fetch(urlrequest+'/AjaxPedidosApp')
-           .then(res=>res.json())
-           .then(json=>{                        
-             state.pedidosloading = false;   
-             if(json.status==1)
-             {
-               app.f7.dialog.alert(json.mensaje);
-             }else{
-              state.pedidos=json.data;
-             }                  
-           })
-           .catch(function(error) {   app.f7.dialog.alert(error); })
-           .finally(function() {
-            state.pedidosloading = false; 
-           });
     
    },
   },

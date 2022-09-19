@@ -53,8 +53,8 @@
             <span class="tabbar-label">Pedidos</span>
           </a>
           <a href="#view-settings" class="tab-link">
-            <i class="icon f7-icons if-not-md">gear</i>
-            <i class="icon material-icons if-md">settings</i>
+            <i class="icon f7-icons if-not-md">person_fill</i>
+            <i class="icon material-icons if-md">person</i>
             <span class="tabbar-label">Cuenta</span>
           </a>
         </div>
@@ -146,7 +146,6 @@
 <script>
   export default (props, {$store, $f7, $update, $ }) => {
    
-
     const cantpedidospendientes = $store.getters.cantpedidospendientes;
    
     // Login screen demo data

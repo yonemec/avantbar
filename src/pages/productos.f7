@@ -24,7 +24,7 @@
     <div class="fab fab-extended fab-center-bottom"   style="min-width: 220px;">
       <a href="#"  @click=${confirmarcarrito}  >
         <i class="icon material-icons md-only">shopping_cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
-        <i class="icon f7-icons if-not-md">cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
+        <i class="icon f7-icons if-not-md" style="opacity: 100; transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1);"  >cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
         <div class="fab-text">${importepedida.value>0?formatter.format(importepedida.value):'Carrito vacio'}</div>
       </a>
     </div>
@@ -37,12 +37,12 @@
           <ul>
             ${productos.value.map((item) => $h`
                 ${item.esgrupo? $h`
-                  <li class="item-divider"  >${item.nombre}</li>
+                  <li class="item-divider" style="color:#2196f3"  >${item.nombre}</li>
                   `:
                   $h`
                   <li>
                     <a href="#" class="item-content">
-                      <div class="item-media"><img src="${item.imagen}"
+                      <div class="item-media"><img style="border-radius: 10%;" src="/DownloadFileServlet?imagen=${item.imagen}"
                           width="80" /></div>
                       <div class="item-inner">
                         <div class="item-title-row">

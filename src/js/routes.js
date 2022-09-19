@@ -15,6 +15,8 @@ import Carrito from '../pages/carrito.f7';
 import Pedidos from '../pages/pedidos.f7';
 import PedidosDet from '../pages/pedidosdet.f7';
 import Mesas from '../pages/mesas.f7';
+import Perfil from '../pages/perfil.f7';
+
 
 var routes = [
   {
@@ -47,7 +49,7 @@ var routes = [
   },
   {
     path: '/settings/',
-    component: SettingsPage,
+    component: Perfil,
   },
   {
     path: '/dynamic-route/blog/:blogId/post/:postId/',
@@ -118,7 +120,7 @@ var routes = [
       var idpedido = to.params.idpedido;
       var pedido=app.store.state.pedidos.find(c=>c.id==idpedido);
 
-      fetch(urlrequest+'/AjaxPedidosDetApp?pedido='+idpedido)
+      fetch(urlrequest+'AjaxPedidosDetApp?pedido='+idpedido+'&idautologin='+app.store.state.usuario.id+'&imei='+app.store.state.usuario.imei)
       .then(res=>res.json())
       .then(json=>{            
         console.log(json);

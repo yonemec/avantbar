@@ -1,6 +1,25 @@
 import $ from 'dom7';
 import Framework7 from 'framework7/bundle';
+// Import the functions you need from the SDKs you need
 
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCLXDM6rLFUK1s3k9WFw2XDXsNEFTuBJCY",
+  authDomain: "avantbar-4d6b3.firebaseapp.com",
+  projectId: "avantbar-4d6b3",
+  storageBucket: "avantbar-4d6b3.appspot.com",
+  messagingSenderId: "751703153517",
+  appId: "1:751703153517:web:d2bc61ed49f6ff676f9864",
+  measurementId: "G-SDW9J19GLW"
+};
 
 
 // Import F7 Styles
@@ -40,7 +59,7 @@ var app = new Framework7({
       var f7 = this;      
       var theme = this.theme;
       const useractual=  this.form.getFormData('#user');     
-      console.log(useractual);
+      console.log("desde appjs,",useractual);
       if(window.location.search.length>0)
       {
         var query = this.utils.parseUrlQuery(window.location.href);
@@ -53,11 +72,25 @@ var app = new Framework7({
             f7.store.dispatch('setmesa', query.m);  
           }
       }
+
       if(useractual)
       {
           f7.store.dispatch('setusuario', useractual);                      
+      }else{
+         f7.store.dispatch('crearinvitado');  
       }
-      f7.store.dispatch('autologin');    
+      
+      try{
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+      }catch(error)
+      {
+        console.log(error);
+      }
+      
+
+      ///f7.store.dispatch('loginfacebook');  
 
 /*
       if (theme == "ios") {
