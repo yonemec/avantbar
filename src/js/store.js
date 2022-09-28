@@ -278,10 +278,9 @@ const store = createStore({
         state.productos=[...state.productos];     
         dispatch('crearinvitado');  
     },
+    
     saludar({ state }){
-
-
-      console.log("saludar");
+     
       var notificationFull = app.f7.notification.create({
         icon: '<i class="icon f7-icons">person_fill</i>',
         title: 'AvantBar',
@@ -291,6 +290,35 @@ const store = createStore({
         closeTimeout: 3000,
       });                          
       notificationFull.open();  
+    },
+    getusuario_x_bid({state,dispatch},bid )
+    {
+        state.usuarioloading=true;
+        fetch(urlrequest+'AjaxUsuariosApp?bid='+bid)
+        .then(res=>res.json())
+        .then(json=>{
+          state.usuarioloading = false; 
+          if(json.status==1)
+          {
+            app.f7.dialog.alert(json.mensaje);
+          }else{
+              const user=json.data;
+              if(user.id>0)
+              {
+                state.usuario=user;
+                app.f7.form.storeFormData('#user', user);
+                var algo= app.f7.form.getFormData('#user');   
+                dispatch('saludar');
+              }else{
+                dispatch('crearinvitado');
+              }
+             
+          }
+        })
+        .catch(function(error) {   app.f7.dialog.alert(error); })
+        .finally(function() {
+          state.usuarioloading = false; 
+        });
     },
     crearinvitado({ state,dispatch }){    //login o crear usuario  
       

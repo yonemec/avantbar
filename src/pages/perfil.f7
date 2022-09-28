@@ -11,7 +11,7 @@
 
       <div class="card demo-card-header-pic"  >
         <div style=" display: flex;align-items: center;justify-content: center;">
-        <div style="margin-top: 25px;  background-size:cover; border-radius: 50%; width: 100px; height:100px; background-image:url(${usuario.value.imagen!=null && usuario.value.imagen.trim().length>0?$h`${usuario.value.imagen}`: 'assets/img/logo.png'}) " class="elevation-10 "></div>
+        <div style="margin-top: 25px;  background-size:cover; border-radius: 50%; width: 100px; height:100px; background-image:url(${usuario.value.imagen!=null && usuario.value.imagen.trim().length>0?$h`${usuario.value.imagen}`: '../public/icons/logo.png'}) " class="elevation-10 "></div>
         </div>
   
         <div style=" display: flex;align-items: center;justify-content: center;">

@@ -105,9 +105,10 @@
   
   <script type="module" src="./js/app.js"></script>
   <script>
-    //var urlrequest="http://localhost:8080/AvantBar";
+    //var urlrequest="http://localhost:8080/AvantBar/";
+    var urlrequest="https://app.avantbar.com.ar/";
     //var urlrequest="http://192.168.0.14:8080/AvantBar";
-    var urlrequest="";
+    //var urlrequest="";
 
 const formatter = new Intl.NumberFormat('en-US', {
 	  style: 'currency',
@@ -116,5 +117,21 @@ const formatter = new Intl.NumberFormat('en-US', {
 	})
 
   </script>
+  <!--<script>
+ var bid="";
+  const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3').then(FingerprintJS => FingerprintJS.load())
+  // Get the visitor identifier when you need it.
+  fpPromise
+    .then(fp => fp.get())
+    .then(result => {
+      // This is the visitor identifier:
+      bid = result.visitorId     
+      console.log(visitorId)
+    })
+    .catch()
+    .finally(
+      () => { console.log("finally"); console.log(app); }
+    )
+</script>-->
 </body>
 </html>

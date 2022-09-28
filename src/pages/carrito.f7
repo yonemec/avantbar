@@ -44,7 +44,7 @@
           ${productos.value.map((item) => $h`
             <li class="swipeout"   @swipeout:deleted=${()=>onDeleted(item)}>
               <div class="item-content swipeout-content">
-                <div class="item-media"><img style="border-radius: 10%;" src="/DownloadFileServlet?imagen=${item.imagen}"
+                <div class="item-media"><img style="border-radius: 10%;" src="https://app.avantbar.com.ar/DownloadFileServlet?imagen=${item.imagen}"
                     width="40" /></div>
                 <div class="item-inner">
                   <div class="item-title-row">

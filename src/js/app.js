@@ -76,7 +76,7 @@ var app = new Framework7({
       if(useractual)
       {
           f7.store.dispatch('setusuario', useractual);                      
-      }else{
+      }else{       
          f7.store.dispatch('crearinvitado');  
       }
       
@@ -89,6 +89,113 @@ var app = new Framework7({
         console.log(error);
       }
       
+
+      
+      var ws_monitor=null;
+
+      "use strict";
+      var Chat = {};
+      Chat.socket = null;
+      Chat.connect = (function(host) {
+          if ('WebSocket' in window) {
+              Chat.socket = new WebSocket(host);
+          } else if ('MozWebSocket' in window) {
+              Chat.socket = new MozWebSocket(host);
+          } else {
+              Console.log('Error:las conexiones web chat no estan soportados en este navegador.');
+              return;
+          }
+          Chat.socket.onopen = function () {
+            $("#ws_estado").attr("title","CONECTADO").css("color","green");
+            if(ws_monitor!=null)
+          {
+           clearInterval(ws_monitor);
+          }
+            
+              Console.log('Info: conexion abierta');
+          };
+          Chat.socket.onclose = function () {
+            $("#ws_estado").attr("title","DESCONECTADO").css("color","red");
+            if(ws_monitor!=null)
+              {
+               clearInterval(ws_monitor);
+              }
+            ws_monitor= setInterval(function (){
+              console.log("conectando");
+              $("#ws_estado").attr("title","CONECTANDO...").css("color","orange");
+              console.log(Chat.socket.readyState);
+              Chat.initialize();
+            }, 3000);
+              Console.log('Info: conexion cerrada.');
+          };
+          Chat.socket.onmessage = function (message) {
+            //http://django-websocket-redis.readthedocs.io/en/latest/heartbeats.html
+            missed_heartbeats = 0;
+            $("#ws_estado").attr("title","CONECTADO").css("color","green");
+            
+            console.log(message);
+              //var data= jQuery.parseJSON(message.data);
+             
+            var data= JSON.parse(message.data);
+              Console.log(message.data);
+              switch (data.tipo) {
+                   case 1:
+                    AjaxPedidosMesas();
+                    if(data.subtipo==1)
+                    {
+                  UIkit.notify("Nuevo pedido creado", {status:'success'});	
+                }
+                else if(data.subtipo==2)
+                    {
+                  UIkit.notify("Pedido eliminado", {status:'danger'});	
+                }
+                  break;
+            default:
+              break;
+          }    	
+          };
+      });
+      
+      
+      Chat.initialize = function() {	
+          if (window.location.protocol == 'http:') {
+             Chat.connect('ws://app.avantbar.com.ar:11232/websocket/chat');     	     	 
+          } else {
+              Chat.connect('wss://app.avantbar.com.ar:11231/websocket/chat');
+          }
+      };
+      
+      Chat.sendMessage = (function() {
+          var message = document.getElementById('chat').value;
+          if (message != '') {
+              Chat.socket.send(message);
+              document.getElementById('chat').value = '';
+          }
+      });
+      var Console = {};
+      Console.log = (function(message) {
+        
+        //console.log(message);
+        
+        /*  var console = document.getElementById('console');
+          var p = document.createElement('p');
+          p.style.wordWrap = 'break-word';
+          p.innerHTML = message;
+          console.appendChild(p);
+          while (console.childNodes.length > 125) {
+              console.removeChild(console.firstChild);
+          }
+          console.scrollTop = console.scrollHeight;*/
+      });
+      
+      Chat.initialize();
+
+
+
+
+
+
+
 
       ///f7.store.dispatch('loginfacebook');  
 
