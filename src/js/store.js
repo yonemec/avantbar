@@ -73,7 +73,7 @@ const store = createStore({
         return;
       }
         
-      if(state.mesa.tipo.id==2 && state.usuario.nombre.includes("Invitado"))
+      if(state.mesa.tipo.id==2 && state.usuario.nombre.toLowerCase().includes("invitado"))
       {
         app.f7.tab.show("#view-settings", true);  
         app.f7.dialog.alert("Para generar los pedidos del Gym <br>Por favor inicie la sesión");
