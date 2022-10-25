@@ -29,10 +29,11 @@ const store = createStore({
     gym:false,   
     pedidos:[],
     cancelandopedido:false,
-    mesa:0,
+    mesa:{ id:0 , nombre:'', tipo:{id:0}},
     listamesas:[],
     usuarioloading:false,
     loginloading:false,
+    gymgrupo:1,
     usuario:{id:0, nombre:'', imei:0, uid:null},
   },
   getters: {
@@ -46,7 +47,7 @@ const store = createStore({
     cantpedidospendientes: ({ state }) => state.pedidos.filter(c=>c.estado.id==1).length,
     generandopedido: ({ state }) => state.generandopedido,
     productosloading: ({ state }) => state.productosloading,
-    productos: ({ state }) => state.gym?state.productos.filter(c=>c.grupo.id==6): state.productos,    
+    productos: ({ state }) => state.mesa.tipo.id==2?state.productos.filter(c=>c.grupo.id==state.gymgrupo): state.productos,    
     productospedidos: ({ state }) => state.productos.filter(c=>c.pedido>0),    
     cantpedida: ({state}) => state.productos.reduce(function(a, b) {  return a + b.pedido; }, 0),
     importepedida: ({state}) => state.productos.reduce(function(a, b) {  return a + (b.pedido*b.precio); }, 0),
@@ -71,8 +72,15 @@ const store = createStore({
       {
         return;
       }
+        
+      if(state.mesa.tipo.id==2 && state.usuario.nombre.includes("Invitado"))
+      {
+        app.f7.tab.show("#view-settings", true);  
+        app.f7.dialog.alert("Para generar los pedidos del Gym <br>Por favor inicie la sesión");
+      }
+
       state.generandopedido=true;      
-      fetch(urlrequest+'AjaxPedidosApp?mesa='+state.mesa+'&idautologin='+state.usuario.id+'&imei='+state.usuario.imei, {
+      fetch(urlrequest+'AjaxPedidosApp?mesa='+state.mesa.id+'&idautologin='+state.usuario.id+'&imei='+state.usuario.imei, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -93,7 +101,8 @@ const store = createStore({
             titleRightText: "#"+json.data,
             subtitle: 'Su pedido fue creado con exito',
             text: '',
-            closeTimeout: 3000,
+            closeTimeout: 6000,
+            closeButton: true,
           });                          
           notificationFull.open();
           dispatch('resetearcarrito'); 
@@ -107,12 +116,25 @@ const store = createStore({
         state.generandopedido=false;
       });
     },
-    setgym({ state }, valor){//https://forum.framework7.io/t/f7-react-store-getter-is-not-reactive-on-updating-an-object-of-array/13283/6
-      state.gym=valor;      
-    },
+    
     setmesa({ state }, valor){
       console.log("setmesa:",valor);      
-      state.mesa=valor;      
+      app.f7.preloader.show();
+      fetch(urlrequest+'AjaxMesas?idmesa='+valor+'&operacion=0&idautologin='+state.usuario.id+'&imei='+state.usuario.imei)
+           .then(res=>res.json())
+           .then(json=>{        
+             app.f7.preloader.hide();    
+             if(json.status==1)
+             {
+               app.f7.dialog.alert(json.mensaje);
+             }else{
+              state.mesa=json.data[0];
+             }
+           })
+           .catch(function(error) {   app.f7.dialog.alert(error); })
+           .finally(function() {
+              app.f7.preloader.hide();
+           });
     },
     setproducto({ state }, e){
       const index = state.productos.findIndex(p => p.id === e.id);      
@@ -127,7 +149,6 @@ const store = createStore({
     },
     crearcuenta({state,dispatch},user)
     {
-     
           if(state.loginloading)
           {
             return;
@@ -277,7 +298,7 @@ const store = createStore({
         });             
         state.productos=[...state.productos];     
         dispatch('crearinvitado');  
-    },
+    }, 
     
     saludar({ state }){
      
@@ -287,7 +308,7 @@ const store = createStore({
         titleRightText: "",
         subtitle: 'Bienvenido  '+state.usuario.nombre,
         text: '',
-        closeTimeout: 3000,
+        closeTimeout: 4000,
       });                          
       notificationFull.open();  
     },
@@ -374,7 +395,8 @@ const store = createStore({
                 titleRightText: "",
                 subtitle: 'Su pedido fue cancelado con exito',
                 text: '',
-                closeTimeout: 3000,
+                closeTimeout: 6000,
+                closeButton: true,
               });                          
               notificationFull.open();              
             }
@@ -424,7 +446,6 @@ const store = createStore({
            .then(res=>res.json())
            .then(json=>{        
              app.f7.preloader.hide();    
-                      
              if(json.status==1)
              {
                app.f7.dialog.alert(json.mensaje);

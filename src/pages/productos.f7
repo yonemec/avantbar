@@ -112,7 +112,7 @@
         if(cantpedida.value>0)
         {
             console.log(mesa);
-            if(mesa.value==0)
+            if(mesa.value.id==0)
             {
               $f7.views.main.router.navigate({path: '/mesas'});
             }else{

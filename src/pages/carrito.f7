@@ -34,7 +34,7 @@
         <div class="block-title">Revise y confirme su pedido</div>
           <div class="block">
             <div class="block-header">Importe total ${formatter.format(importepedida.value)}</div>
-            <div class="block-header">Mesa ${mesa.value}</div>
+            <div class="block-header">${mesa.value.nombre}</div>
           </div>
 
 
@@ -78,7 +78,9 @@
     const importepedida = $store.getters.importepedida;
     const generandopedido = $store.getters.generandopedido;
     const mesa = $store.getters.mesa;
+
     
+    console.log(mesa);
     
     const onDeleted = (e) => {
         e.pedido=0;        
@@ -87,6 +89,7 @@
         $f7.views.main.router.refreshPage();
     }   
     
+
 
     const generarpedido=()=>{
       if(cantpedida.value>0)
