@@ -25,7 +25,8 @@
       <a href="#"  @click=${confirmarcarrito}  >
         <i class="icon material-icons md-only">shopping_cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
         <i class="icon f7-icons if-not-md" style="opacity: 100; transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1);"  >cart ${cantpedida.value>0?$h` <span class="badge color-red">${cantpedida.value}</span>`:''  } </i>        
-        <div class="fab-text">${importepedida.value>0?formatter.format(importepedida.value):'Carrito vacio'}</div>
+        <!--<div class="fab-text">${importepedida.value>0?formatter.format(importepedida.value):'Carrito vacio'}</div>-->
+        <div class="fab-text">${importepedida.value>0?'Ver pedido':'Carrito vacio'}</div>
       </a>
     </div>
 
