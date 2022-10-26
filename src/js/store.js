@@ -77,6 +77,7 @@ const store = createStore({
       {
         app.f7.tab.show("#view-settings", true);  
         app.f7.dialog.alert("Para generar los pedidos del Gym <br>Por favor inicie la sesión");
+        return;
       }
 
       state.generandopedido=true;      
