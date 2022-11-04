@@ -47,7 +47,7 @@
                           width="80" /></div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${item.nombre}</div>
+                          <div class="item-title"   >${item.nombre}</div>
                           <div class="item-after">${formatter.format(item.precio)}</div>
                         </div>
                         <div class="item-text  ">${item.descripcion}</div>    
